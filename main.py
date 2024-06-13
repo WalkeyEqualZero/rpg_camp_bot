@@ -145,6 +145,7 @@ async def make_group(update: Update, context: ContextTypes.DEFAULT_TYPE):
     con.close()
     reply_keyboard = [['Профиль'],
                       ['Проверка ежедневных заданий'],
+                      ['Использовать токен'],
                       ['Квесты', 'Ачивки']]
     markup = ReplyKeyboardMarkup(reply_keyboard, one_time_keyboard=False)
 
@@ -164,6 +165,7 @@ async def find_group(update: Update, context: ContextTypes.DEFAULT_TYPE):
     con.close()
     reply_keyboard = [['Профиль'],
                       ['Проверка ежедневных заданий'],
+                      ['Использовать токен'],
                       ['Квесты', 'Ачивки']]
     markup = ReplyKeyboardMarkup(reply_keyboard, one_time_keyboard=False)
 
@@ -198,6 +200,7 @@ async def profile(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     reply_keyboard = [['Профиль'],
                       ['Проверка ежедневных заданий'],
+                      ['Использовать токен'],
                       ['Квесты', 'Ачивки']]
     markup = ReplyKeyboardMarkup(reply_keyboard, one_time_keyboard=False)
 
@@ -205,6 +208,7 @@ async def profile(update: Update, context: ContextTypes.DEFAULT_TYPE):
                                  caption=f'Имя: {db_user[1]}\n'
                                          f'Группа: {gr[1]}\n'
                                          f'Уровень: {db_user[4]}\n'
+                                         f'Токенов на ништяки: {db_user[15]}\n'
                                          f'Опыт: {exp}\n', reply_markup=markup)
 
 
@@ -245,6 +249,7 @@ async def daily(update: Update, context: ContextTypes.DEFAULT_TYPE):
     else:
         reply_keyboard = [['Профиль'],
                           ['Проверка ежедневных заданий'],
+                          ['Использовать токен'],
                           ['Квесты', 'Ачивки']]
         markup = ReplyKeyboardMarkup(reply_keyboard, one_time_keyboard=False)
         await update.message.reply_text(f'Вы уже сегодня делали проверку', reply_markup=markup)
@@ -399,6 +404,7 @@ async def seventh_response(update: Update, context: ContextTypes.DEFAULT_TYPE):
         context.user_data['daily'] += 't'
         reply_keyboard = [['Профиль'],
                           ['Проверка ежедневных заданий'],
+                          ['Использовать токен'],
                           ['Квесты', 'Ачивки']]
         markup = ReplyKeyboardMarkup(reply_keyboard, one_time_keyboard=False)
 
@@ -417,6 +423,7 @@ async def seventh_response(update: Update, context: ContextTypes.DEFAULT_TYPE):
             cur.execute(f"UPDATE users SET daily = 'fffffff' WHERE tg_username = '{user.name}'")
             lvl, exp = lvl_exp(db_user[5] + 100)
             cur.execute(f"UPDATE users SET exp = {db_user[5] + 100} WHERE tg_username = '{user.name}'")
+            cur.execute(f"UPDATE users SET tokens = {db_user[15] + (lvl - db_user[4])} WHERE tg_username = '{user.name}'")
             cur.execute(f"UPDATE users SET level = {lvl} WHERE tg_username = '{user.name}'")
             if db_user[11] >= 4 and db_user[10][0] == 'f':
                 new = db_user[10]
@@ -444,6 +451,7 @@ async def seventh_response(update: Update, context: ContextTypes.DEFAULT_TYPE):
         context.user_data['daily'] += 'f'
         reply_keyboard = [['Профиль'],
                           ['Проверка ежедневных заданий'],
+                          ['Использовать токен'],
                           ['Квесты', 'Ачивки']]
         markup = ReplyKeyboardMarkup(reply_keyboard, one_time_keyboard=False)
 
@@ -462,6 +470,8 @@ async def seventh_response(update: Update, context: ContextTypes.DEFAULT_TYPE):
             cur.execute(f"UPDATE users SET daily = 'fffffff' WHERE tg_username = '{user.name}'")
             lvl, exp = lvl_exp(db_user[5] + 100)
             cur.execute(f"UPDATE users SET exp = {db_user[5] + 100} WHERE tg_username = '{user.name}'")
+            cur.execute(
+                f"UPDATE users SET tokens = {db_user[15] + (lvl - db_user[4])} WHERE tg_username = '{user.name}'")
             cur.execute(f"UPDATE users SET level = {lvl} WHERE tg_username = '{user.name}'")
             if db_user[11] >= 4 and db_user[10][0] == 'f':
                 new = db_user[10]
@@ -519,6 +529,7 @@ async def visitka_svecha(update: Update, context: ContextTypes.DEFAULT_TYPE):
     chat_id = update.message.chat_id
     reply_keyboard = [['Профиль'],
                       ['Проверка ежедневных заданий'],
+                      ['Использовать токен'],
                       ['Квесты', 'Ачивки']]
     markup = ReplyKeyboardMarkup(reply_keyboard, one_time_keyboard=False)
 
@@ -527,6 +538,7 @@ async def visitka_svecha(update: Update, context: ContextTypes.DEFAULT_TYPE):
     db_user = cur.execute(f"SELECT * FROM users WHERE tg_username = '{user.name}'").fetchone()
     lvl, exp = lvl_exp(db_user[5] + 150)
     cur.execute(f"UPDATE users SET exp = {db_user[5] + 150} WHERE tg_username = '{user.name}'")
+    cur.execute(f"UPDATE users SET tokens = {db_user[15] + (lvl - db_user[4])} WHERE tg_username = '{user.name}'")
     cur.execute(f"UPDATE users SET level = {lvl} WHERE tg_username = '{user.name}'")
     if update.message.text == 'Тематическая свечка' and db_user[12] >= 2 and db_user[10][1] == 'f':
         new = db_user[10]
@@ -566,6 +578,7 @@ async def dance(update: Update, context: ContextTypes.DEFAULT_TYPE):
     chat_id = update.message.chat_id
     reply_keyboard = [['Профиль'],
                       ['Проверка ежедневных заданий'],
+                      ['Использовать токен'],
                       ['Квесты', 'Ачивки']]
     markup = ReplyKeyboardMarkup(reply_keyboard, one_time_keyboard=False)
 
@@ -574,6 +587,7 @@ async def dance(update: Update, context: ContextTypes.DEFAULT_TYPE):
     db_user = cur.execute(f"SELECT * FROM users WHERE tg_username = '{user.name}'").fetchone()
     lvl, exp = lvl_exp(db_user[5] + 200)
     cur.execute(f"UPDATE users SET exp = {db_user[5] + 200} WHERE tg_username = '{user.name}'")
+    cur.execute(f"UPDATE users SET tokens = {db_user[15] + (lvl - db_user[4])} WHERE tg_username = '{user.name}'")
     cur.execute(f"UPDATE users SET level = {lvl} WHERE tg_username = '{user.name}'")
 
     if update.message.text == 'Выступление на любом из концертов' and db_user[14] == 1 and db_user[10][2] == 'f':
@@ -597,11 +611,59 @@ async def dance(update: Update, context: ContextTypes.DEFAULT_TYPE):
         await update.message.reply_text('Вы заработали 200 опыта!', reply_markup=markup)
 
 
+async def token_com(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    user = update.effective_user
+
+    reply_keyboard = [['Профиль'],
+                      ['Проверка ежедневных заданий'],
+                      ['Использовать токен'],
+                      ['Квесты', 'Ачивки']]
+    markup = ReplyKeyboardMarkup(reply_keyboard, one_time_keyboard=False)
+
+    f = open("./resources/day.txt", "r")
+    dt_str = f.read()
+    f.close()
+    dt = datetime.strptime(dt_str, "%d/%m/%Y")
+    if datetime.today().date() > dt.date():
+        con = sqlite3.connect("./resources/db.db")
+        cur = con.cursor()
+        every = cur.execute(f"SELECT * FROM users").fetchall()
+        for j in range(len(every)):
+            cur.execute(f"UPDATE users SET token_used = 0 WHERE id = {every[j][0]}")
+        con.commit()
+        con.close()
+
+        f = open("./resources/day.txt", "w")
+        f.write(datetime.today().strftime("%d/%m/%Y"))
+        f.close()
+        print('yeah')
+
+    con = sqlite3.connect("./resources/db.db")
+    cur = con.cursor()
+    db_user = cur.execute(f"SELECT * FROM users WHERE tg_username = '{user.name}'").fetchone()
+    pairs = cur.execute(f"SELECT * FROM users WHERE group_id = {db_user[3]}").fetchall()
+    chk = True
+    for was in pairs:
+        if was[16] == 1:
+            chk = False
+    if chk and db_user[15] > 0:
+        cur.execute(f"UPDATE users SET tokens = {db_user[15] - 1} WHERE tg_username = '{user.name}'")
+        cur.execute(f"UPDATE users SET token_used = 1 WHERE tg_username = '{user.name}'")
+        con.commit()
+        con.close()
+        await update.message.reply_text('Вы использовали ваш токен! Отдыхайте!', reply_markup=markup)
+    else:
+        con.commit()
+        con.close()
+        await update.message.reply_text('Вы не можете использовать токен :(', reply_markup=markup)
+
+
 async def boss(update: Update, context: ContextTypes.DEFAULT_TYPE):
     user = update.effective_user
     chat_id = update.message.chat_id
     reply_keyboard = [['Профиль'],
                       ['Проверка ежедневных заданий'],
+                      ['Использовать токен'],
                       ['Квесты', 'Ачивки']]
     markup = ReplyKeyboardMarkup(reply_keyboard, one_time_keyboard=False)
 
@@ -610,6 +672,7 @@ async def boss(update: Update, context: ContextTypes.DEFAULT_TYPE):
     db_user = cur.execute(f"SELECT * FROM users WHERE tg_username = '{user.name}'").fetchone()
     lvl, exp = lvl_exp(db_user[5] + 500)
     cur.execute(f"UPDATE users SET exp = {db_user[5] + 500} WHERE tg_username = '{user.name}'")
+    cur.execute(f"UPDATE users SET tokens = {db_user[15] + (lvl - db_user[4])} WHERE tg_username = '{user.name}'")
     cur.execute(f"UPDATE users SET level = {lvl} WHERE tg_username = '{user.name}'")
     if db_user[10][4] == 'f':
         new = db_user[10]
@@ -634,6 +697,7 @@ async def main_page(update: Update, context: ContextTypes.DEFAULT_TYPE):
     chat_id = update.message.chat_id
     reply_keyboard = [['Профиль'],
                       ['Проверка ежедневных заданий'],
+                      ['Использовать токен'],
                       ['Квесты', 'Ачивки']]
     markup = ReplyKeyboardMarkup(reply_keyboard, one_time_keyboard=False)
     await update.message.reply_text('Возвращаю обратно...', reply_markup=markup)
@@ -670,6 +734,7 @@ async def achievement(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     reply_keyboard = [['Профиль'],
                       ['Проверка ежедневных заданий'],
+                      ['Использовать токен'],
                       ['Квесты', 'Ачивки']]
     markup = ReplyKeyboardMarkup(reply_keyboard, one_time_keyboard=False)
     await update.message.reply_text(f'Твои ачивки:\n'
@@ -714,6 +779,7 @@ def main():
     application.add_handler(MessageHandler(filters.Regex('^Главная страница$'), main_page))
     application.add_handler(MessageHandler(filters.Regex('^Квесты$'), quests))
     application.add_handler(MessageHandler(filters.Regex('^Ачивки$'), achievement))
+    application.add_handler(MessageHandler(filters.Regex('^Использовать токен$'), token_com))
     application.add_handler(MessageHandler(filters.Regex('^Подготовка визитки|Тематическая свечка$'), visitka_svecha))
     application.add_handler(
         MessageHandler(filters.Regex('^Выступление на любом из концертов|Придумать флешмоб$'), dance))
