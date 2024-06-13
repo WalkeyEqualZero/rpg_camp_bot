@@ -159,18 +159,24 @@ async def find_group(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     con = sqlite3.connect("./resources/db.db")
     cur = con.cursor()
-    gr = cur.execute(f"SELECT * FROM groups WHERE id = {group_id}").fetchone()
-    cur.execute(f"UPDATE users SET group_id = {group_id} WHERE tg_username = '{user.name}'")
-    con.commit()
-    con.close()
-    reply_keyboard = [['Профиль'],
-                      ['Проверка ежедневных заданий'],
-                      ['Использовать токен'],
-                      ['Квесты', 'Ачивки']]
-    markup = ReplyKeyboardMarkup(reply_keyboard, one_time_keyboard=False)
+    try:
+        gr = cur.execute(f"SELECT * FROM groups WHERE id = {group_id}").fetchone()
+        cur.execute(f"UPDATE users SET group_id = {group_id} WHERE tg_username = '{user.name}'")
+        con.commit()
+        con.close()
+        reply_keyboard = [['Профиль'],
+                          ['Проверка ежедневных заданий'],
+                          ['Использовать токен'],
+                          ['Квесты', 'Ачивки']]
+        markup = ReplyKeyboardMarkup(reply_keyboard, one_time_keyboard=False)
 
-    await update.message.reply_text(f'Готово, регистрация закончена!\nТвоя группа: {gr[1]}', reply_markup=markup)
-    return ConversationHandler.END
+        await update.message.reply_text(f'Готово, регистрация закончена!\nТвоя группа: {gr[1]}', reply_markup=markup)
+        return ConversationHandler.END
+    except sqlite3.OperationalError:
+        reply_keyboard = [['Да', 'Нет']]
+        markup = ReplyKeyboardMarkup(reply_keyboard, one_time_keyboard=True)
+        await update.message.reply_text(f'Такой группы не существует\nЕщё раз, ваш напарник создал группу?', reply_markup=markup)
+        return 4
 
 
 async def stop(update: Update, context: ContextTypes.DEFAULT_TYPE):
@@ -563,7 +569,7 @@ async def visitka_svecha(update: Update, context: ContextTypes.DEFAULT_TYPE):
         cur.execute(f"UPDATE users SET visit = 1 WHERE tg_username = '{user.name}'")
         con.commit()
         con.close()
-        await context.bot.send_photo(chat_id, './resources/svecha.png',
+        await context.bot.send_photo(chat_id, './resources/tamada.png',
                                      caption='Вы заработали 150 опыта!', reply_markup=markup)
     elif update.message.text == 'Подготовка визитки':
         cur.execute(f"UPDATE users SET visit = 1 WHERE tg_username = '{user.name}'")
@@ -597,7 +603,7 @@ async def dance(update: Update, context: ContextTypes.DEFAULT_TYPE):
         cur.execute(f"UPDATE users SET scene = 1 WHERE tg_username = '{user.name}'")
         con.commit()
         con.close()
-        await context.bot.send_photo(chat_id, './resources/svecha.png',
+        await context.bot.send_photo(chat_id, './resources/tamada.png',
                                      caption='Вы заработали 200 опыта!', reply_markup=markup)
     elif update.message.text == 'Подготовка визитки':
         cur.execute(f"UPDATE users SET scene = 1 WHERE tg_username = '{user.name}'")
