@@ -196,7 +196,7 @@ async def profile(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     image = Image.open('./resources/bg.png')
     player_png = Image.open(f'./resources/classes/{db_user[7]}/{db_user[6].capitalize()}/player.png')
-    image.paste(player_png, (451, 486), player_png)
+    image.paste(player_png, (258, 405), player_png)
 
     bio = BytesIO()
     bio.name = 'image.PNG'
@@ -699,6 +699,13 @@ async def help_func(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await update.message.reply_text('Я rpgbot для лагеря, сделанный чувачком)')
 
 
+async def send_db(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    chat_id = update.message.chat_id
+    document = open('./resources/db.db', 'rb')
+    await context.bot.send_document(chat_id, document, caption='лови!')
+
+
+
 async def main_page(update: Update, context: ContextTypes.DEFAULT_TYPE):
     chat_id = update.message.chat_id
     reply_keyboard = [['Профиль'],
@@ -781,6 +788,7 @@ def main():
 
     application.add_handler(start_handler)
     application.add_handler(CommandHandler('help', help_func))
+    application.add_handler(CommandHandler('send_db_danya', send_db))
     application.add_handler(MessageHandler(filters.Regex('^Профиль$'), profile))
     application.add_handler(MessageHandler(filters.Regex('^Главная страница$'), main_page))
     application.add_handler(MessageHandler(filters.Regex('^Квесты$'), quests))
